@@ -12465,7 +12465,8 @@ Update
 </button>
 
 <script type="module">
-import { initializeApp } from 
+
+import { initializeApp } from
 "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 
 import {
@@ -12473,7 +12474,7 @@ getFirestore,
 doc,
 setDoc,
 onSnapshot
-} from 
+} from
 "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -12488,31 +12489,108 @@ appId: "1:1055949531016:web:bd95b6a3048eedc8b63c3d"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-window.updateTrips = async function() {
+const DASHBOARD_DOC =
+doc(db,"dashboard","main");
 
-let val =
-document.getElementById("tripInput").value;
+/* collect all fields */
+function collectFormState(){
+
+let data={};
+
+document.querySelectorAll(
+'input, textarea, select'
+).forEach(el=>{
+
+if(!el.id) return;
+
+if(el.type==="checkbox"){
+data[el.id]=el.checked;
+}
+else{
+data[el.id]=el.value;
+}
+
+});
+
+return data;
+
+}
+
+/* save all */
+async function saveAll(){
 
 await setDoc(
-doc(db,"dashboard","main"),
-{trips: val}
+DASHBOARD_DOC,
+collectFormState(),
+{merge:true}
 );
 
 }
 
-onSnapshot(
-doc(db,"dashboard","main"),
-(docSnap)=>{
+/* load all */
+function applyState(data){
 
-if(docSnap.exists()){
+document.querySelectorAll(
+'input, textarea, select'
+).forEach(el=>{
 
-document.getElementById(
-"tripCount"
-).innerText = docSnap.data().trips;
+if(!el.id) return;
+if(data[el.id]===undefined) return;
 
+if(el.type==="checkbox"){
+el.checked=data[el.id];
+}
+else{
+el.value=data[el.id];
 }
 
 });
+
+}
+
+/* live sync */
+onSnapshot(
+DASHBOARD_DOC,
+(docSnap)=>{
+
+if(docSnap.exists()){
+applyState(docSnap.data());
+}
+
+}
+);
+
+/* autosave */
+document.addEventListener(
+"input",
+(e)=>{
+
+if(
+e.target.matches(
+"input,textarea,select"
+)
+){
+saveAll();
+}
+
+}
+);
+
+document.addEventListener(
+"change",
+(e)=>{
+
+if(
+e.target.matches(
+"input,textarea,select"
+)
+){
+saveAll();
+}
+
+}
+);
+
 </script>
 </body>
 </html>
