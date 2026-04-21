@@ -12453,6 +12453,66 @@ async function jsceSetPassword(password) {
   console.log('Password set successfully');
 }
 </script>
+<h2>
+Total Trips:
+<span id="tripCount">0</span>
+</h2>
 
+<input id="tripInput">
+
+<button onclick="updateTrips()">
+Update
+</button>
+
+<script type="module">
+import { initializeApp } from 
+"https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+import {
+getFirestore,
+doc,
+setDoc,
+onSnapshot
+} from 
+"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyC93nikKbJsAZYbqVzUkMOT8aMeAnEaWbM",
+authDomain: "rj-dashboard-live.firebaseapp.com",
+projectId: "rj-dashboard-live",
+storageBucket: "rj-dashboard-live.firebasestorage.app",
+messagingSenderId: "1055949531016",
+appId: "1:1055949531016:web:bd95b6a3048eedc8b63c3d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.updateTrips = async function() {
+
+let val =
+document.getElementById("tripInput").value;
+
+await setDoc(
+doc(db,"dashboard","main"),
+{trips: val}
+);
+
+}
+
+onSnapshot(
+doc(db,"dashboard","main"),
+(docSnap)=>{
+
+if(docSnap.exists()){
+
+document.getElementById(
+"tripCount"
+).innerText = docSnap.data().trips;
+
+}
+
+});
+</script>
 </body>
 </html>
