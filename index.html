@@ -3627,7 +3627,7 @@ window.addEventListener('DOMContentLoaded', function() {
       if (!d || !d._savedAt) return;
       const localRaw = localStorage.getItem('rj_fresh_v1');
       const localTs  = localRaw ? (JSON.parse(localRaw)._savedAt || 0) : 0;
-      if (d._savedAt > localTs) {
+      if (d._savedAt >= localTs) {
         try { localStorage.setItem('rj_fresh_v1', JSON.stringify(d)); } catch(e) {}
         if (typeof _applyState === 'function') _applyState(d);
       }
