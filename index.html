@@ -12591,6 +12591,168 @@ saveAll();
 }
 );
 
+<script type="module">
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+import {
+getFirestore,
+doc,
+setDoc,
+onSnapshot
+}
+from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+apiKey: "AIzaSyC93nikKbJsAZYbqVzUkMOT8aMeAnEaWbM",
+authDomain: "rj-dashboard-live.firebaseapp.com",
+projectId: "rj-dashboard-live",
+storageBucket: "rj-dashboard-live.firebasestorage.app",
+messagingSenderId: "1055949531016",
+appId: "1:1055949531016:web:bd95b6a3048eedc8b63c3d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const masterRef =
+doc(db,"dashboard","masterSync");
+
+
+let remoteUpdating=false;
+
+
+/* MASTER SAVE */
+
+async function syncMaster(){
+
+if(remoteUpdating) return;
+
+await setDoc(masterRef,{
+
+tasks:
+typeof tasks!=="undefined"
+? tasks : [],
+
+dailyLogs:
+typeof dailyLogs!=="undefined"
+? dailyLogs : [],
+
+workLogs:
+typeof workLogs!=="undefined"
+? workLogs : [],
+
+workflow:
+typeof workflow!=="undefined"
+? workflow : [],
+
+allocations:
+typeof allocations!=="undefined"
+? allocations : [],
+
+plannerEntries:
+typeof plannerEntries!=="undefined"
+? plannerEntries : [],
+
+taskIdCounter:
+typeof taskIdCounter!=="undefined"
+? taskIdCounter : 1,
+
+plannerIdCounter:
+typeof plannerIdCounter!=="undefined"
+? plannerIdCounter : 1
+
+},{merge:true});
+
+}
+
+window.syncMaster=syncMaster;
+
+
+
+/* LIVE LOAD */
+
+onSnapshot(masterRef,(snap)=>{
+
+if(!snap.exists()) return;
+
+remoteUpdating=true;
+
+const d=snap.data();
+
+
+if(d.tasks &&
+typeof tasks!=="undefined")
+tasks=d.tasks;
+
+if(d.dailyLogs &&
+typeof dailyLogs!=="undefined")
+dailyLogs=d.dailyLogs;
+
+if(d.workLogs &&
+typeof workLogs!=="undefined")
+workLogs=d.workLogs;
+
+if(d.workflow &&
+typeof workflow!=="undefined")
+workflow=d.workflow;
+
+if(d.allocations &&
+typeof allocations!=="undefined")
+allocations=d.allocations;
+
+if(d.plannerEntries &&
+typeof plannerEntries!=="undefined")
+plannerEntries=d.plannerEntries;
+
+
+
+if(typeof renderTasks==="function")
+renderTasks();
+
+if(typeof renderDailyLogs==="function")
+renderDailyLogs();
+
+if(typeof renderWorkLogs==="function")
+renderWorkLogs();
+
+if(typeof renderWorkflow==="function")
+renderWorkflow();
+
+if(typeof renderAllocations==="function")
+renderAllocations();
+
+if(typeof renderCalendar==="function")
+renderCalendar();
+
+
+setTimeout(()=>{
+remoteUpdating=false;
+},300);
+
+});
+
+
+
+/* AUTO SAVE */
+
+document.addEventListener(
+"change",
+()=>{
+syncMaster();
+}
+);
+
+document.addEventListener(
+"click",
+()=>{
+setTimeout(syncMaster,300);
+}
+);
+
+</script>
+
 </script>
 </body>
 </html>
