@@ -3761,7 +3761,23 @@ function _applyState(d) {
       var ap = document.querySelector('.panel.active');
       if (ap) {
         var pid = ap.id.replace('panel-','');
-        var navMap = {dashboard:renderDashboard,tasks:renderTasks,targets:renderTargets,verticals:renderVerticals};
+      var navMap = {
+dashboard: renderDashboard,
+targets: renderTargets,
+timeline: renderTimeline,
+tasks: renderTasks,
+verticals: renderVerticals,
+
+workflow: renderFlowEntries,
+dailylog: renderDailyLogs,
+allocation: renderTaskAllocations,
+training: renderTrainingRecords,
+worklog: renderWorkLogs,
+
+datavault: renderDataVault,
+addtask: renderTasks,
+importcsv: renderTasks
+};
         if (navMap[pid]) navMap[pid]();
       }
       try { renderDashboard(); } catch(e) {}
