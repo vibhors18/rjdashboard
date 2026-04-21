@@ -3726,7 +3726,7 @@ async function loadStateCloud() {
     const localTs  = localRaw ? (JSON.parse(localRaw)._savedAt || 0) : 0;
     if (d._savedAt > localTs) {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch(e) {}
-      return d;
+      return d; // keep
     }
     return null;
   } catch(e) { return null; }
@@ -3783,7 +3783,7 @@ function _startFirebasePolling() {
       const localTs  = localRaw ? (JSON.parse(localRaw)._savedAt || 0) : 0;
       // Only apply if cloud is newer than what we have (someone else saved)
       if (d._savedAt > localTs + 2000) {
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch(e) {}
+        try { /* localStorage disabled */ } catch(e) {}
         _applyState(d);
         toast('🔄', 'Dashboard updated by a teammate');
       }
